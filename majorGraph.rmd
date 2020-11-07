@@ -1,0 +1,39 @@
+---
+title: "Graph Replication"
+author: "Patrick Wheeler"
+date: "11/6/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+```{r, echo=FALSE, results='hide', message=FALSE}
+library(fivethirtyeight)
+library(tidyverse)
+library(ggpubr)
+library(DT)
+library(rio)
+library(htmltools)
+```
+
+```{r}
+
+salaryScale <- 1000
+total <- college_recent_grads$total
+searchFrame <- select(college_recent_grads, major, total, median, p25th, p75th, employed_parttime, non_college_jobs, low_wage_jobs)
+
+searchFrame$median <- searchFrame$median/salaryScale
+searchFrame$p25th <- college_recent_grads$p25th/salaryScale
+searchFrame$p75th <- college_recent_grads$p75th/salaryScale
+searchFrame$employed_parttime <- college_recent_grads$employed_parttime/total*100
+searchFrame$non_college_jobs <- college_recent_grads$non_college_jobs/total*100
+searchFrame$low_wage_jobs <- college_recent_grads$low_wage_jobs/total*100
+
+
+#'EARNINGS(x1,000)'
+includeHTML("title.html")
+datatable(searchFrame, colnames = c("MAJOR", "# OF MAJORS", "MED.", "25TH", "75TH", "PART-TIME", "NON-COLLEGE", "LOW-PAYING")) %>%
+  formatRound(columns=c("employed_parttime", "non_college_jobs", "low_wage_jobs"), digits=2)
+
+```
